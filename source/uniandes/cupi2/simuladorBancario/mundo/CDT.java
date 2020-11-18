@@ -47,6 +47,7 @@ public class CDT
         valorInvertido = 0;
         interesMensual = 0;
         mesApertura = 0;
+        verificarInvariante();
     }
 
     /**
@@ -65,11 +66,22 @@ public class CDT
      * @param pInteresMensual Interés mensual que va a ganar el CDT. pInteresMensual > 0.
      * @param pMes Mes de apertura del CDT. pMes > 0.
      */
-    public void invertir( double pMontoInvertido, double pInteresMensual, int pMes )
+    public void invertir( double pMontoInvertido, double pInteresMensual, int pMes ) throws Exception
     {
-        valorInvertido = pMontoInvertido;
-        interesMensual = pInteresMensual;
-        mesApertura = pMes;
+    	verificarInvariante();
+    	
+    	if(valorInvertido == 0 && interesMensual == 0)
+    	{
+    		valorInvertido = pMontoInvertido;
+            interesMensual = pInteresMensual;
+            mesApertura = pMes;
+    	}
+    	else
+    	{
+    		Exception e2 = new Exception ("ERROR: SOLO SE PUEDE TENER UN CDT ACTIVO A LA VEZ");
+    		
+    		throw e2;
+    	}
     }
 
     /**
@@ -79,6 +91,7 @@ public class CDT
      */
     public double calcularValorPresente( int pMesActual )
     {
+    	verificarInvariante();
         int mesesTranscurridos = pMesActual - mesApertura;
         return ( double ) ( valorInvertido + ( mesesTranscurridos * interesMensual * valorInvertido ) );
     }
@@ -91,6 +104,7 @@ public class CDT
      */
     public double cerrar( int pMesActual )
     {
+    	verificarInvariante();
         double valorCierre = calcularValorPresente( pMesActual );
         valorInvertido = 0;
         interesMensual = 0;
@@ -100,7 +114,15 @@ public class CDT
     
     //TODO: 7 Calcular los intereses del cdt
     public double darInteresGenerado(int pMesActual) {
+    	verificarInvariante();
     	int mesesTranscurridos = pMesActual - mesApertura;
     	return (double) ( mesesTranscurridos * interesMensual * valorInvertido );
+    }
+    
+private void verificarInvariante() {
+    	
+    	assert valorInvertido >=0 : "Ingresó un monto a invertir negativo";
+        assert interesMensual >=0 : "Intereges generado es negativo";
+        assert mesApertura >=0 : "El mes de apertura debe ser positivo";
     }
 }

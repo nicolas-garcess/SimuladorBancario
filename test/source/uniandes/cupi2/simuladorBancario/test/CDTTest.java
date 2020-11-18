@@ -71,10 +71,14 @@ public class CDTTest
     @Test
     public void testInvertir( )
     {
-        setupEscenario1( );
+        try {
+    	setupEscenario1( );
         cdt.invertir( 100000, 0.05, 1 );
         assertEquals( "El valor presente del CDT no es el esperado", 100000, cdt.calcularValorPresente( 1 ), 2 );
-
+        }catch(Exception e2) {
+    		e2.printStackTrace();
+    	}
+        
     }
 
     /**
@@ -88,10 +92,13 @@ public class CDTTest
     @Test
     public void testCalcularValorPresesente( )
     {
+    	try {
         setupEscenario1( );
         cdt.invertir( 100000, 0.05, 1 );
         assertEquals( "El valor presente del CDT no es el esperado", 100000 * ( 1 + 0.05 ), cdt.calcularValorPresente( 2 ), 0.01 );
-
+    	}catch(Exception e2) {
+    		e2.printStackTrace();
+    	}
     }
 
     /**
@@ -105,12 +112,15 @@ public class CDTTest
     @Test
     public void testCerrar( )
     {
+    	try {
         setupEscenario1( );
         cdt.invertir( 100000, 0.05, 1 );
         assertEquals( "El valor presente del CDT no es el esperado", 100000 * ( 1 + 0.05 ), cdt.cerrar( 2 ), 0.01 );
         assertEquals( "El interes mensual no es el esperado", 0.0, cdt.darInteresMensual( ), 0.00001 );
         assertEquals( "El valor presente no es el esperado", 0, cdt.calcularValorPresente( 1 ), 0.00001 );
-
+	    }catch(Exception e2) {
+			e2.printStackTrace();
+		}
     }
 
 }

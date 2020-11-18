@@ -77,6 +77,8 @@ public class SimuladorBancario
         corriente = new CuentaCorriente( );
         ahorros = new CuentaAhorros( );
         inversion = new CDT( );
+        
+        verificarInvariante();
     }
 
     /**
@@ -143,6 +145,7 @@ public class SimuladorBancario
      */
     public double calcularSaldoTotal( )
     {
+    	verificarInvariante();
         return corriente.darSaldo( ) + ahorros.darSaldo( ) + inversion.calcularValorPresente( mesActual );
     }
 
@@ -156,6 +159,7 @@ public class SimuladorBancario
     {
 		double pInteres = Double.parseDouble(pInteresMensual) / 100.0;
 		inversion.invertir( pMonto, pInteres, mesActual );
+		verificarInvariante();
     }
 
     /**
@@ -166,6 +170,7 @@ public class SimuladorBancario
     public void consignarCuentaCorriente( double pMonto )
     {
         corriente.consignarMonto( pMonto );
+        verificarInvariante();
     }
 
     /**
@@ -176,6 +181,7 @@ public class SimuladorBancario
     public void consignarCuentaAhorros( double pMonto )
     {
         ahorros.consignarMonto( pMonto );
+        verificarInvariante();
     }
 
     /**
@@ -187,6 +193,7 @@ public class SimuladorBancario
     public void retirarCuentaCorriente( double pMonto )
     {
         corriente.retirarMonto( pMonto );
+        verificarInvariante();
     }
 
     /**
@@ -197,6 +204,7 @@ public class SimuladorBancario
     public void retirarCuentaAhorros( double pMonto )
     {
         ahorros.retirarMonto( pMonto );
+        verificarInvariante();
     }
     
 
@@ -206,6 +214,7 @@ public class SimuladorBancario
      */
     public void avanzarMesSimulacion( )
     {
+    	verificarInvariante();
         mesActual += 1;
         ahorros.actualizarSaldoPorPasoMes( );
     }
@@ -221,6 +230,7 @@ public class SimuladorBancario
         interesGenerado += inversion.darInteresGenerado(mesActual);
         double valorCierreCDT = inversion.cerrar( mesActual );
         corriente.consignarMonto( valorCierreCDT );
+        verificarInvariante();
     }
     
     /**
@@ -231,8 +241,9 @@ public class SimuladorBancario
     public void pasarAhorrosToCorriente()
     {
     	double cantidad = ahorros.darSaldo();
-    	ahorros = null;
+    	//ahorros = null;
     	corriente.consignarMonto(cantidad);
+    	verificarInvariante();
     }
 
     /**
@@ -242,8 +253,10 @@ public class SimuladorBancario
      */
     public void metodo1( int pMeses )
     {
+    	
     	mesActual += pMeses;
     	ahorros.actualizarSaldoMeses(pMeses);
+    	verificarInvariante();
     }
 
     /**
@@ -252,6 +265,7 @@ public class SimuladorBancario
      */
     public double metodo2( )
     {	
+    	verificarInvariante();
     	cerrarCDT();
     	corriente.cerrarCuenta();
     	double respuesta = interesGenerado + ahorros.darInteresGenerado();
@@ -264,4 +278,14 @@ public class SimuladorBancario
 	public int metodo3(int pTipo, int pCuenta) {
 		return 0;
 	}
+	
+	private void verificarInvariante() {
+    	
+    	assert mesActual > 0 : "El mes de actual debe ser mayor a cero";
+        assert interesGenerado >= 0 : "El interés generado debe ser positivo";
+        //assert (ahorros.darSaldo() + corriente.darSaldo()) <= INVERSION_MAXIMO: "ERROR: SE SUPERÓ EL MONTO DE INVERSIÓN";
+    	assert corriente != null : "Cuenta corriente sin inicializar";
+        assert ahorros != null : "Cuenta de ahorros sin inicializar";
+        assert inversion != null : "CDT sin inicializar";
+    }
 }

@@ -90,7 +90,7 @@ public class SimuladorBancarioTest
     private void setupEscenario9()
     {
     	setupEscenario1();
-    	cuenta.retirarCuentaCorriente(2000);
+    	//cuenta.retirarCuentaCorriente(2000);
     	cuenta.consignarCuentaAhorros(83000000);
     	try {
 			cuenta.invertirCDT(14000000, "1");
@@ -98,6 +98,28 @@ public class SimuladorBancarioTest
 			e.printStackTrace();
 		}
     }
+    
+    private void setupEscenario10( )
+    {
+        setupEscenario2( );
+        try {
+        cuenta.invertirCDT( 500000, "2" );
+        cuenta.retirarCuentaAhorros( 200000 );
+        }catch(Exception e2) {
+        	System.out.println(e2.getMessage());
+        }
+    }
+    
+    @Test
+    public void testPunto1( )
+    {
+        setupEscenario10( );
+        cuenta.avanzarMesSimulacion();
+        cuenta.cerrarCDT();
+        assertEquals( "ERROR EN EL PUNTO 1", 2074000, cuenta.calcularSaldoTotal(), 0.0001);
+    }
+    
+    
 
     /**
      * Prueba 1: Método que se encarga de verificar el método invertirCDT.<br>
