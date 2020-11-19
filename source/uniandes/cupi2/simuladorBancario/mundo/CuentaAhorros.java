@@ -109,7 +109,6 @@ public class CuentaAhorros
     {
     	interesGenerado += saldo*Math.pow(1+0.006, pMeses) - saldo;
     	saldo *= Math.pow(1+0.006, pMeses);
-    	
     }
     
     //TODO: 9 Cerrar cuenta de ahorros

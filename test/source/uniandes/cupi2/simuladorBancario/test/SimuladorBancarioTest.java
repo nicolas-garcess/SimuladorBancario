@@ -299,7 +299,7 @@ public class SimuladorBancarioTest
     	cuenta.avanzarMesSimulacion();
     	cuenta.consignarCuentaCorriente(150000);
     	int respuesta = 98568988;
-    	assertEquals( "El saldo de la cuenta corriente no es el esperado", respuesta, ( int )cuenta.darCuentaCorriente().darSaldo(), 5 );    	
+    	assertEquals( "El saldo de la cuenta corriente no es el esperado", respuesta, ( int )cuenta.calcularSaldoTotal(), 5 );    	
     }
 
 }
