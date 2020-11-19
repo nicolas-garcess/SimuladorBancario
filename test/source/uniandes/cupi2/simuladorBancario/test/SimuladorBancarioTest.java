@@ -101,13 +101,13 @@ public class SimuladorBancarioTest
     
     private void setupEscenario10( )
     {
-        setupEscenario2( );
+    	setupEscenario2( );
         try {
         cuenta.invertirCDT( 500000, "2" );
-        cuenta.retirarCuentaAhorros( 200000 );
         }catch(Exception e2) {
-        	System.out.println(e2.getMessage());
+        	//e2.printStackTrace();;
         }
+        cuenta.retirarCuentaAhorros( 200000 );
     }
     
     @Test
@@ -116,7 +116,7 @@ public class SimuladorBancarioTest
         setupEscenario10( );
         cuenta.avanzarMesSimulacion();
         cuenta.cerrarCDT();
-        assertEquals( "ERROR EN EL PUNTO 1", 2074000, cuenta.calcularSaldoTotal(), 0.0001);
+        assertEquals( "ERROR EN EL PUNTO 1", 1902800, cuenta.calcularSaldoTotal(), 0.0001);
     }
     
     
@@ -294,12 +294,12 @@ public class SimuladorBancarioTest
     {
     	setupEscenario9();
     	cuenta.metodo1(2);
-    	cuenta.consignarCuentaAhorros(5000000);
+    	//cuenta.consignarCuentaAhorros(5000000);
     	cuenta.pasarAhorrosToCorriente();
     	cuenta.avanzarMesSimulacion();
     	cuenta.consignarCuentaCorriente(150000);
     	int respuesta = 98568988;
-    	assertEquals( "El saldo de la cuenta corriente no es el esperado", respuesta, ( int )cuenta.darCuentaAhorros().darSaldo(), 5 );    	
+    	assertEquals( "El saldo de la cuenta corriente no es el esperado", respuesta, ( int )cuenta.darCuentaCorriente().darSaldo(), 5 );    	
     }
 
 }

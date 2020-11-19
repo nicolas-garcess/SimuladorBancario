@@ -68,8 +68,6 @@ public class CDT
      */
     public void invertir( double pMontoInvertido, double pInteresMensual, int pMes ) throws Exception
     {
-    	verificarInvariante();
-    	
     	if(valorInvertido == 0 && interesMensual == 0)
     	{
     		valorInvertido = pMontoInvertido;
@@ -82,6 +80,8 @@ public class CDT
     		
     		throw e2;
     	}
+    	
+    	verificarInvariante();
     }
 
     /**
