@@ -10,6 +10,8 @@
  */
 package uniandes.cupi2.simuladorBancario.mundo;
 
+import java.util.ArrayList;
+
 /**
  * Clase que representa el simulador bancario para las tres cuentas de un cliente.
  */
@@ -55,6 +57,12 @@ public class SimuladorBancario
      */
     private CDT inversion;
     
+    /** Arraylist de tipo transacción, para alamcenar las transacciones realizadas*/
+    private ArrayList<Transaccion> transaccionesHistoricas;
+    
+    /** Consecutivo de las transacciones*/
+    private int consecutivoTransacciones;
+    
 
     // -----------------------------------------------------------------
     // Métodos
@@ -77,6 +85,8 @@ public class SimuladorBancario
         corriente = new CuentaCorriente( );
         ahorros = new CuentaAhorros( );
         inversion = new CDT( );
+        transaccionesHistoricas = new ArrayList<Transaccion>();
+        consecutivoTransacciones = 0;
         
         verificarInvariante();
     }
@@ -138,8 +148,16 @@ public class SimuladorBancario
     {
         return mesActual;
     }
-
+    
     /**
+     * Retorna la lista de transacciones realizadas.
+     * @return lista de transacciones realizadas.
+     */
+    public ArrayList<Transaccion> getTransaccionesHistoricas() {
+		return transaccionesHistoricas;
+	}
+
+	/**
      * Calcula el saldo total de las cuentas del cliente.
      * @return Saldo total de las cuentas del cliente.
      */
@@ -159,6 +177,11 @@ public class SimuladorBancario
     {
 		double pInteres = Double.parseDouble(pInteresMensual) / 100.0;
 		inversion.invertir( pMonto, pInteres, mesActual );
+		
+		consecutivoTransacciones = consecutivoTransacciones +1;
+		Transaccion transaccion = new Transaccion(consecutivoTransacciones,pMonto,Transaccion.ENTRADA,Transaccion.CDT);
+		transaccionesHistoricas.add(transaccion);
+		
 		verificarInvariante();
     }
 
@@ -170,6 +193,11 @@ public class SimuladorBancario
     public void consignarCuentaCorriente( double pMonto )
     {
         corriente.consignarMonto( pMonto );
+        
+        consecutivoTransacciones = consecutivoTransacciones +1;
+		Transaccion transaccion = new Transaccion(consecutivoTransacciones,pMonto,Transaccion.ENTRADA,Transaccion.CORRIENTE);
+		transaccionesHistoricas.add(transaccion);
+        
         verificarInvariante();
     }
 
@@ -181,6 +209,11 @@ public class SimuladorBancario
     public void consignarCuentaAhorros( double pMonto )
     {
         ahorros.consignarMonto( pMonto );
+        
+        consecutivoTransacciones = consecutivoTransacciones +1;
+		Transaccion transaccion = new Transaccion(consecutivoTransacciones,pMonto,Transaccion.ENTRADA,Transaccion.AHORROS);
+		transaccionesHistoricas.add(transaccion);
+        
         verificarInvariante();
     }
 
@@ -193,6 +226,11 @@ public class SimuladorBancario
     public void retirarCuentaCorriente( double pMonto )
     {
         corriente.retirarMonto( pMonto );
+        
+        consecutivoTransacciones = consecutivoTransacciones +1;
+		Transaccion transaccion = new Transaccion(consecutivoTransacciones,pMonto,Transaccion.SALIDA,Transaccion.CORRIENTE);
+		transaccionesHistoricas.add(transaccion);
+        
         verificarInvariante();
     }
 
@@ -204,6 +242,11 @@ public class SimuladorBancario
     public void retirarCuentaAhorros( double pMonto )
     {
         ahorros.retirarMonto( pMonto );
+        
+        consecutivoTransacciones = consecutivoTransacciones +1;
+		Transaccion transaccion = new Transaccion(consecutivoTransacciones,pMonto,Transaccion.SALIDA,Transaccion.AHORROS);
+		transaccionesHistoricas.add(transaccion);
+        
         verificarInvariante();
     }
     
@@ -217,6 +260,19 @@ public class SimuladorBancario
     	verificarInvariante();
         mesActual += 1;
         ahorros.actualizarSaldoPorPasoMes( );
+        
+        if(ahorros.darSaldo() > 0)
+        {
+	        consecutivoTransacciones = consecutivoTransacciones +1;
+			Transaccion transaccion1 = new Transaccion(consecutivoTransacciones,(ahorros.darSaldo()*ahorros.darInteresMensual()),Transaccion.ENTRADA,Transaccion.AHORROS);
+			transaccionesHistoricas.add(transaccion1);
+        }
+        else if(inversion.calcularValorPresente(mesActual) > 0)
+        {
+        	consecutivoTransacciones = consecutivoTransacciones +1;
+    		Transaccion transaccion2 = new Transaccion(consecutivoTransacciones,inversion.darInteresGenerado(mesActual),Transaccion.ENTRADA,Transaccion.CDT);
+    		transaccionesHistoricas.add(transaccion2);
+        }
     }
 
     /**
@@ -232,6 +288,13 @@ public class SimuladorBancario
         double valorCierreCDT = inversion.cerrar( mesActual );
         corriente.consignarMonto( valorCierreCDT );
         
+        consecutivoTransacciones = consecutivoTransacciones + 1;
+		Transaccion transaccion1 = new Transaccion(consecutivoTransacciones,valorCierreCDT,Transaccion.SALIDA,Transaccion.CDT);
+		transaccionesHistoricas.add(transaccion1);
+		
+		consecutivoTransacciones = consecutivoTransacciones + 1;
+		Transaccion transaccion2 = new Transaccion(consecutivoTransacciones,valorCierreCDT,Transaccion.ENTRADA,Transaccion.CORRIENTE);
+		transaccionesHistoricas.add(transaccion2);
     }
     
     /**
@@ -246,6 +309,14 @@ public class SimuladorBancario
     	//ahorros = null;
     	corriente.consignarMonto(cantidad);
     	ahorros.cerrarCuenta();
+    	
+    	consecutivoTransacciones = consecutivoTransacciones + 1;
+		Transaccion transaccion1 = new Transaccion(consecutivoTransacciones,cantidad,Transaccion.SALIDA,Transaccion.AHORROS);
+		transaccionesHistoricas.add(transaccion1);
+		
+		consecutivoTransacciones = consecutivoTransacciones + 1;
+		Transaccion transaccion2 = new Transaccion(consecutivoTransacciones,cantidad,Transaccion.ENTRADA,Transaccion.CORRIENTE);
+		transaccionesHistoricas.add(transaccion2);
     }
 
     /**
@@ -258,6 +329,23 @@ public class SimuladorBancario
     	verificarInvariante();
     	mesActual += pMeses;
     	ahorros.actualizarSaldoMeses(pMeses);
+    	
+    	for(int i = (mesActual-pMeses)+1; i <= mesActual; i++)
+    	{
+    		if(ahorros.darSaldo() > 0)
+            {
+    	        consecutivoTransacciones = consecutivoTransacciones +1;
+    			Transaccion transaccion1 = new Transaccion(consecutivoTransacciones,(ahorros.darSaldo()*ahorros.darInteresMensual()),Transaccion.ENTRADA,Transaccion.AHORROS);
+    			transaccionesHistoricas.add(transaccion1);
+            }
+            else if(inversion.calcularValorPresente(mesActual) > 0)
+            {
+            	consecutivoTransacciones = consecutivoTransacciones +1;
+        		Transaccion transaccion2 = new Transaccion(consecutivoTransacciones,inversion.darInteresGenerado(i),Transaccion.ENTRADA,Transaccion.CDT);
+        		transaccionesHistoricas.add(transaccion2);
+            }
+    	}
+    	
     }
 
     /**
@@ -273,11 +361,29 @@ public class SimuladorBancario
     	ahorros.cerrarCuenta();
     	interesGenerado = 0;
     	mesActual = 1;
+    	
+    	transaccionesHistoricas.clear();
+    	consecutivoTransacciones = 0;
         return respuesta;
     }
 
 	public int metodo3(int pTipo, int pCuenta) {
-		return 0;
+		
+		double mayorTransaccion = 0;
+		int consecutivoTransaccion = 0;
+		
+		for(Transaccion transaccion: transaccionesHistoricas)
+		{
+			if (transaccion.getTipoTransaccion(pTipo) == pTipo && transaccion.getTipoCuenta(pCuenta) == pCuenta)
+			{
+				if(transaccion.getValor() > mayorTransaccion)
+				{
+					mayorTransaccion = transaccion.getValor();
+					consecutivoTransaccion = transaccion.getConsecutivo();
+				}
+			}
+		}
+		return consecutivoTransaccion;
 	}
 	
 	private void verificarInvariante() {

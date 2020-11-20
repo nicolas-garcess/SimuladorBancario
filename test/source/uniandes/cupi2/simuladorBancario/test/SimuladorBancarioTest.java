@@ -105,7 +105,7 @@ public class SimuladorBancarioTest
         try {
         cuenta.invertirCDT( 500000, "2" );
         }catch(Exception e2) {
-        	//e2.printStackTrace();;
+        	e2.printStackTrace();;
         }
         cuenta.retirarCuentaAhorros( 200000 );
     }
