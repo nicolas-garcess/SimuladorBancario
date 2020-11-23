@@ -58,6 +58,15 @@ public class CDT
     {
         return interesMensual;
     }
+    
+    /**
+     * Retorna el monto invertido del CDT.
+     * @return Monto invertido del CDT.
+     */
+    public double darValorInvertido( )
+    {
+        return valorInvertido;
+    }    
 
     /**
      * Inicia una inversión en un CDT .<br>
@@ -65,6 +74,7 @@ public class CDT
      * @param pMontoInvertido Monto de dinero que se va a invertir en el CDT. pMontoInvertido > 0.
      * @param pInteresMensual Interés mensual que va a ganar el CDT. pInteresMensual > 0.
      * @param pMes Mes de apertura del CDT. pMes > 0.
+     * @throws Excepción si hay un CDT abierto, lanza una excepción indicando que ya hay un CDT abierto.
      */
     public void invertir( double pMontoInvertido, double pInteresMensual, int pMes ) throws Exception
     {

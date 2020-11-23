@@ -11,11 +11,13 @@
 package uniandes.cupi2.simuladorBancario.test;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import uniandes.cupi2.simuladorBancario.mundo.SimuladorBancario;
+
 
 /**
  * Clase usada para verificar que los métodos de la clase CuentaBancaria estén correctamente implementados.
@@ -105,7 +107,7 @@ public class SimuladorBancarioTest
         try {
         cuenta.invertirCDT( 500000, "2" );
         }catch(Exception e2) {
-        	e2.printStackTrace();;
+        	e2.printStackTrace();
         }
         cuenta.retirarCuentaAhorros( 200000 );
     }

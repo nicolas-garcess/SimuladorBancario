@@ -11,13 +11,11 @@
 package uniandes.cupi2.simuladorBancario.mundo;
 
 import java.util.ArrayList;
-
 /**
  * Clase que representa el simulador bancario para las tres cuentas de un cliente.
  */
 public class SimuladorBancario
 {
-	
 	public static final double INVERSION_MAXIMO = 100000000;
 	
     // -----------------------------------------------------------------
@@ -100,6 +98,10 @@ public class SimuladorBancario
         return nombre;
     }
     
+    /**
+     * Retorna el interés generado.
+     * @return Interés generado.
+     */
     public double darInteresGenerado() {
     	return interesGenerado + ahorros.darInteresGenerado();
     }
@@ -172,16 +174,31 @@ public class SimuladorBancario
      * <b>post: </b> Invirtió un monto de dinero en un CDT.
      * @param pMonto Monto de dinero a invertir en un CDT. pMonto > 0.
      * @param pInteresMensual Interés del CDT elegido por el cliente.
+     * @throws Lanza la excepción generada en la clase CDT.
      */
-    public void invertirCDT( double pMonto, String pInteresMensual ) throws Exception
+    public void invertirCDT( double pMonto, String pInteresMensual ) throws Exception, NumberFormatException
     {
-		double pInteres = Double.parseDouble(pInteresMensual) / 100.0;
-		inversion.invertir( pMonto, pInteres, mesActual );
-		
-		consecutivoTransacciones = consecutivoTransacciones +1;
-		Transaccion transaccion = new Transaccion(consecutivoTransacciones,pMonto,Transaccion.ENTRADA,Transaccion.CDT);
-		transaccionesHistoricas.add(transaccion);
-		
+    	double numInteres = 0;
+    	
+    	try {
+			
+			numInteres = Double.valueOf(pInteresMensual.replace(",","."));
+	   			   		
+	   		//double pInteres = Double.parseDouble(pInteresMensual) / 100.0;
+			double pInteres = numInteres/100.0;
+			inversion.invertir( pMonto, pInteres, mesActual );
+			
+			consecutivoTransacciones = consecutivoTransacciones +1;
+			Transaccion transaccion = new Transaccion(consecutivoTransacciones,pMonto,Transaccion.ENTRADA,Transaccion.CDT);
+			transaccionesHistoricas.add(transaccion);
+    	   
+       }catch(NumberFormatException e) {
+    	   	
+    	   	NumberFormatException e3 = new NumberFormatException ("ERROR: EL VALOR INGRESADO DEBE SER NUMÉRICO");
+   		
+   			throw e3;
+       }
+				
 		verificarInvariante();
     }
 
@@ -194,7 +211,7 @@ public class SimuladorBancario
     {
         corriente.consignarMonto( pMonto );
         
-        consecutivoTransacciones = consecutivoTransacciones +1;
+        consecutivoTransacciones = consecutivoTransacciones + 1;
 		Transaccion transaccion = new Transaccion(consecutivoTransacciones,pMonto,Transaccion.ENTRADA,Transaccion.CORRIENTE);
 		transaccionesHistoricas.add(transaccion);
         
@@ -243,7 +260,7 @@ public class SimuladorBancario
     {
         ahorros.retirarMonto( pMonto );
         
-        consecutivoTransacciones = consecutivoTransacciones +1;
+        consecutivoTransacciones = consecutivoTransacciones + 1;
 		Transaccion transaccion = new Transaccion(consecutivoTransacciones,pMonto,Transaccion.SALIDA,Transaccion.AHORROS);
 		transaccionesHistoricas.add(transaccion);
         
@@ -259,7 +276,6 @@ public class SimuladorBancario
     {
     	verificarInvariante();
         mesActual += 1;
-        ahorros.actualizarSaldoPorPasoMes( );
         
         if(ahorros.darSaldo() > 0)
         {
@@ -267,12 +283,13 @@ public class SimuladorBancario
 			Transaccion transaccion1 = new Transaccion(consecutivoTransacciones,(ahorros.darSaldo()*ahorros.darInteresMensual()),Transaccion.ENTRADA,Transaccion.AHORROS);
 			transaccionesHistoricas.add(transaccion1);
         }
-        else if(inversion.calcularValorPresente(mesActual) > 0)
+        if(inversion.calcularValorPresente(mesActual) > 0)
         {
         	consecutivoTransacciones = consecutivoTransacciones +1;
-    		Transaccion transaccion2 = new Transaccion(consecutivoTransacciones,inversion.darInteresGenerado(mesActual),Transaccion.ENTRADA,Transaccion.CDT);
+    		Transaccion transaccion2 = new Transaccion(consecutivoTransacciones,inversion.darValorInvertido()*inversion.darInteresMensual(),Transaccion.ENTRADA,Transaccion.CDT);
     		transaccionesHistoricas.add(transaccion2);
         }
+        ahorros.actualizarSaldoPorPasoMes( );
     }
 
     /**
@@ -328,7 +345,7 @@ public class SimuladorBancario
     {
     	verificarInvariante();
     	mesActual += pMeses;
-    	ahorros.actualizarSaldoMeses(pMeses);
+    	//ahorros.actualizarSaldoMeses(pMeses);
     	
     	for(int i = (mesActual-pMeses)+1; i <= mesActual; i++)
     	{
@@ -338,12 +355,13 @@ public class SimuladorBancario
     			Transaccion transaccion1 = new Transaccion(consecutivoTransacciones,(ahorros.darSaldo()*ahorros.darInteresMensual()),Transaccion.ENTRADA,Transaccion.AHORROS);
     			transaccionesHistoricas.add(transaccion1);
             }
-            else if(inversion.calcularValorPresente(mesActual) > 0)
+            if(inversion.calcularValorPresente(mesActual) > 0)
             {
             	consecutivoTransacciones = consecutivoTransacciones +1;
-        		Transaccion transaccion2 = new Transaccion(consecutivoTransacciones,inversion.darInteresGenerado(i),Transaccion.ENTRADA,Transaccion.CDT);
+        		Transaccion transaccion2 = new Transaccion(consecutivoTransacciones,inversion.darValorInvertido()*inversion.darInteresMensual(),Transaccion.ENTRADA,Transaccion.CDT);
         		transaccionesHistoricas.add(transaccion2);
             }
+            ahorros.actualizarSaldoPorPasoMes( );
     	}
     	
     }
@@ -367,6 +385,12 @@ public class SimuladorBancario
         return respuesta;
     }
 
+    /**
+     * Entrega el consecutivo de la mayor transacción de un tipo y cuenta.
+     * @param pTipo, tipo de transacción
+     * @param pCuenta, tipo de cuenta
+     * @return Retorna el consecutivo de un tipo de transacción.
+     */
 	public int metodo3(int pTipo, int pCuenta) {
 		
 		double mayorTransaccion = 0;
@@ -374,7 +398,7 @@ public class SimuladorBancario
 		
 		for(Transaccion transaccion: transaccionesHistoricas)
 		{
-			if (transaccion.getTipoTransaccion(pTipo) == pTipo && transaccion.getTipoCuenta(pCuenta) == pCuenta)
+			if (transaccion.getTipoTransaccion() == pTipo && transaccion.getTipoCuenta() == pCuenta)
 			{
 				if(transaccion.getValor() > mayorTransaccion)
 				{

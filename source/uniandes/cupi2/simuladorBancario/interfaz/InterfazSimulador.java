@@ -176,6 +176,7 @@ public class InterfazSimulador extends JFrame
                 if( monto > 0 )
                 {
                     cuenta.invertirCDT( monto, pInteres );
+                    panelTransacciones.refrescar( cuenta.getTransaccionesHistoricas() );
                     actualizar();
                 }
                 else
@@ -197,6 +198,7 @@ public class InterfazSimulador extends JFrame
     public void cerrarCDT( )
     {
         cuenta.cerrarCDT( );
+        panelTransacciones.refrescar( cuenta.getTransaccionesHistoricas() );
         actualizar();
     }
 
@@ -222,6 +224,7 @@ public class InterfazSimulador extends JFrame
             else
             {
                 cuenta.retirarCuentaAhorros( monto );
+                panelTransacciones.refrescar( cuenta.getTransaccionesHistoricas() );
                 actualizar( );
             }
         }
@@ -246,6 +249,7 @@ public class InterfazSimulador extends JFrame
             if( monto >= 0 )
             {
                 cuenta.consignarCuentaAhorros( Double.parseDouble( pMonto ) );
+                panelTransacciones.refrescar( cuenta.getTransaccionesHistoricas() );
                 actualizar();
             }
             else
@@ -278,6 +282,7 @@ public class InterfazSimulador extends JFrame
             {
             	try {
                 cuenta.retirarCuentaCorriente( monto );
+                panelTransacciones.refrescar( cuenta.getTransaccionesHistoricas() );
             	}
             	catch(Exception e)
             	{
@@ -306,6 +311,7 @@ public class InterfazSimulador extends JFrame
             if( monto >= 0 )
             {
                 cuenta.consignarCuentaCorriente( monto );
+                panelTransacciones.refrescar( cuenta.getTransaccionesHistoricas() );
                 actualizar( );
             }
             else
@@ -339,6 +345,7 @@ public class InterfazSimulador extends JFrame
     public void avanzarMesSimulacion( )
     {
         cuenta.avanzarMesSimulacion( );
+        panelTransacciones.refrescar( cuenta.getTransaccionesHistoricas() );
         actualizar( );
 
     }
@@ -358,6 +365,7 @@ public class InterfazSimulador extends JFrame
             if( meses >= 1 )
             {
                 cuenta.metodo1( meses );
+                panelTransacciones.refrescar( cuenta.getTransaccionesHistoricas() );
                 actualizar( );
                 //JOptionPane.showMessageDialog( this, "Requerimiento 1." , "Avanzar simulacion", JOptionPane.ERROR_MESSAGE );
             }
@@ -380,6 +388,7 @@ public class InterfazSimulador extends JFrame
     {
     	double ans = cuenta.metodo2( );
         String respuesta = Double.toString(ans);
+        panelTransacciones.eliminar();
         actualizar( );
         JOptionPane.showMessageDialog( this, "El total de intereses generados en la simulación fue: " + respuesta, "Reiniciar simulacion.", JOptionPane.INFORMATION_MESSAGE );
     }
